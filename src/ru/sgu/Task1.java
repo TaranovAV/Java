@@ -12,6 +12,8 @@ import java.util.Scanner;
 
 public class Task1 {
 
+    private static final String fileName = "output.txt";
+
     public class DataFormat {
 
         private String lastName, firstName, patronymic, company, stringInf;
@@ -80,7 +82,7 @@ public class Task1 {
                 .thenComparing(DataFormat::getPatronymic);
         if (!data.isEmpty()) {
             data.sort(comparator);
-            try (FileWriter writer = new FileWriter("output.txt")) {
+            try (FileWriter writer = new FileWriter(fileName)) {
                 for (DataFormat el : data) {
                     writer.write(el.getInf() + "\n");
                 }
