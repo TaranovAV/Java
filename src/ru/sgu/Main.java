@@ -21,8 +21,8 @@ public class Main {
                 switch (bl) {
                     case "1":
                         System.out.print("Введите число: ");
-                        BigDecimal num = new BigDecimal(in.next());
-                        Task1 task1 = new Task1(num.intValue());
+                        int num = in.nextInt();
+                        Task1 task1 = new Task1(num);
                         task1.start();
                         break;
                     case "2":
