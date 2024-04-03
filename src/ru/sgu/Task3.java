@@ -1,60 +1,60 @@
 package ru.sgu;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Task3 {
-    private static final String FILENAME = "input.txt";
+    private int iterations;
 
-    public void start() {
-
-        int lineNumber = 0;
-
+    public Task3() {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Введите число итераций: ");
         try {
-            Scanner scanner = new Scanner(new File(FILENAME));
-
-            while (scanner.hasNextLine()) {
-                lineNumber++;
-                String[] str = scanner.nextLine().split(" ");
-                if (checkInput(str, lineNumber)) {
-                    System.out.println(lineNumber + ") " + str[1] + " " + str[0].charAt(0) +
-                            "." + str[2].charAt(0) + ".");
-                }
-            }
-
-            scanner.close();
-        }
-        catch (FileNotFoundException ex) {
-            System.out.println("Файл input.txt не найден.");
+            this.iterations = sc.nextInt();
+        } catch (InputMismatchException e) {
+            System.out.println(e.getMessage());
         }
     }
 
-    private boolean checkInput(String[] str, int lineNumber) {
-        if (str[0].isEmpty())  {
-            System.out.println(lineNumber + ") Ошибка - пустая строка.");
-            return false;
-        }
-        if (str.length < 3) {
-            System.out.println(lineNumber + ") Ошибка - в строке меньше 3 последовательностей символов.");
-            return false;
-        }
+    public void start() {
+        long startTime, endTime;
+        startTime = System.nanoTime();
+        useStringBuilder(iterations);
+        endTime = System.nanoTime();
+        System.out.println("Время выполнения StringBuilder: " + (endTime - startTime) + " нс");
+        startTime = System.nanoTime();
+        useStringBuffer(iterations);
+        endTime = System.nanoTime();
+        System.out.println("Время выполнения StringBuffer: " + (endTime - startTime) + " нс");
+        startTime = System.nanoTime();
+        useStringConcatenation(iterations);
+        endTime = System.nanoTime();
+        System.out.println("Время выполнения String: " + (endTime - startTime) + " нс");
+    }
 
-        boolean error = false;
-        for (int i = 0; i < 3; i++) {
-            String line = str[i];
-            for (int z = 0; z < line.length(); z++) {
-                char c = line.charAt(z);
-                if (Character.getType(c) != Character.UPPERCASE_LETTER &&
-                        Character.getType(c) != Character.LOWERCASE_LETTER)
-                    error = true;
-            }
-        }
+    private void useStringBuilder(int iterations) {
+        StringBuilder stringBuilder = new StringBuilder();
+        IntStream.range(0, iterations).forEach(i -> stringBuilder.append(generateRandomString()));
+    }
 
-        if (error) {
-            System.out.println(lineNumber + ") Ошибка - есть постороние символы в предполагаемом ФИО.");
-        }
+    private void useStringBuffer(int iterations) {
+        StringBuffer stringBuffer = new StringBuffer();
+        IntStream.range(0, iterations).forEach(i -> stringBuffer.append(generateRandomString()));
+    }
 
-        return !error;
+    private void useStringConcatenation(int iterations) {
+        String result = "";
+        result = IntStream.range(0, iterations)
+                .mapToObj(i -> generateRandomString())
+                .collect(Collectors.joining());
+    }
+
+    private String generateRandomString() {
+        return IntStream.range(0, 10)
+                .mapToObj(j -> (char) ('a' + Math.random() * ('z' - 'a' + 1)))
+                .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
+                .toString();
     }
 }
