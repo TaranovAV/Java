@@ -1,31 +1,65 @@
 package ru.sgu;
 
-import java.util.NoSuchElementException;
-import java.util.Scanner;
+import java.io.*;
+import java.util.zip.*;
 
 public class Task2 {
-    private Day today;
-    private Integer addDays;
 
-    enum Day {
-        monday, tuesday, wednesday, thursday, friday, saturday, sunday;
+    private final File workDir;
+    private final String targetStr;
 
-        public Day calcDay(int days) {
-            int newIndex = (ordinal() + (days % values().length) + values().length) % values().length;
-            return values()[newIndex];
+    public Task2(String dirName, String target) {
+        this.workDir = new File(dirName);
+        this.targetStr = target.toLowerCase();
+    }
+
+    private boolean isCorrectName(File file) {
+        return file.getName().toLowerCase().contains(targetStr);
+    }
+
+    private int fileCount = 0;
+
+    private void zipFile(ZipOutputStream zout, File file, String entryName) {
+        fileCount++;
+        System.out.printf("Выбран файл %d: '%s'%n", fileCount, file.getName());
+        try (FileInputStream fis = new FileInputStream(file)) {
+            zout.putNextEntry(new ZipEntry(entryName));
+            fis.transferTo(zout);
+            zout.closeEntry();
+        } catch (IOException e) {
+            System.out.printf("Не удалось добавить %s в архив%n", file.getName());
         }
     }
 
-    public Task2(String weekday, Integer addDays) {
-        this.addDays = (addDays % 7 + 7) % 7;
-        this.today = Task2.Day.valueOf(weekday);
+    private void zipDirectory(ZipOutputStream zout, File directory, String entryName) {
+        System.out.printf("Архивирование '%s'%n", directory.getName());
+        File[] files = directory.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                String entry = entryName + file.getName();
+                if (file.isDirectory()) {
+                    if (isCorrectName(file)) {
+                        zipDirectory(zout, file, entry + "/");
+                    }
+                } else if (isCorrectName(file)) {
+                    zipFile(zout, file, entry);
+                }
+            }
+        }
     }
 
     public void start() {
-        if (this.today == null || this.addDays == null) {
-            System.out.println("Нет значения для текущего дня и (или) количества дней.");
+        if (!workDir.isDirectory()) {
+            System.out.printf("Директории `%s` неn или к ней неверно указан путь%n", workDir);
             return;
         }
-        System.out.println(today.calcDay(this.addDays));
+        try (FileOutputStream fout = new FileOutputStream(workDir.getName() + ".zip");
+             ZipOutputStream zout = new ZipOutputStream(fout)) {
+            zipDirectory(zout, workDir, "");
+        } catch (IOException e) {
+            System.out.printf("Не удалось создать архив %s.zip%n", workDir.getName());
+            return;
+        }
+        System.out.println("Архивация выбранных файлов прошла успешно");
     }
 }
