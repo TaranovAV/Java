@@ -30,13 +30,8 @@ public class Task2 {
     }
 
     public void start() {
-        if (!Files.isDirectory(workDir)) {
-            System.out.printf("Директории `%s` не существует или к ней неверно указан путь%n", workDir);
-            return;
-        }
         try (FileOutputStream fout = new FileOutputStream(workDir.getFileName() + ".zip");
              ZipOutputStream zout = new ZipOutputStream(fout)) {
-
             Files.walkFileTree(workDir, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
@@ -46,7 +41,6 @@ public class Task2 {
                     return FileVisitResult.CONTINUE;
                 }
             });
-
         } catch (IOException e) {
             System.out.printf("Не удалось создать архив %s.zip%n", workDir.getFileName());
             return;
