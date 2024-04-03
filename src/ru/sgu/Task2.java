@@ -1,65 +1,57 @@
 package ru.sgu;
 
 import java.io.*;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.zip.*;
 
 public class Task2 {
 
-    private final File workDir;
+    private final Path workDir;
     private final String targetStr;
 
     public Task2(String dirName, String target) {
-        this.workDir = new File(dirName);
+        this.workDir = Paths.get(dirName);
         this.targetStr = target.toLowerCase();
     }
 
-    private boolean isCorrectName(File file) {
-        return file.getName().toLowerCase().contains(targetStr);
+    private boolean isCorrectName(Path file) {
+        return file.getFileName().toString().toLowerCase().contains(targetStr);
     }
 
     private int fileCount = 0;
 
-    private void zipFile(ZipOutputStream zout, File file, String entryName) {
+    private void zipFile(ZipOutputStream zout, Path file) throws IOException {
         fileCount++;
-        System.out.printf("Выбран файл %d: '%s'%n", fileCount, file.getName());
-        try (FileInputStream fis = new FileInputStream(file)) {
-            zout.putNextEntry(new ZipEntry(entryName));
-            fis.transferTo(zout);
-            zout.closeEntry();
-        } catch (IOException e) {
-            System.out.printf("Не удалось добавить %s в архив%n", file.getName());
-        }
-    }
-
-    private void zipDirectory(ZipOutputStream zout, File directory, String entryName) {
-        System.out.printf("Архивирование '%s'%n", directory.getName());
-        File[] files = directory.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                String entry = entryName + file.getName();
-                if (file.isDirectory()) {
-                    if (isCorrectName(file)) {
-                        zipDirectory(zout, file, entry + "/");
-                    }
-                } else if (isCorrectName(file)) {
-                    zipFile(zout, file, entry);
-                }
-            }
-        }
+        System.out.printf("Выбран файл %d: '%s'%n", fileCount, file.getFileName());
+        zout.putNextEntry(new ZipEntry(workDir.relativize(file).toString()));
+        Files.copy(file, zout);
+        zout.closeEntry();
     }
 
     public void start() {
-        if (!workDir.isDirectory()) {
-            System.out.printf("Директории `%s` неn или к ней неверно указан путь%n", workDir);
+        if (!Files.isDirectory(workDir)) {
+            System.out.printf("Директории `%s` не существует или к ней неверно указан путь%n", workDir);
             return;
         }
-        try (FileOutputStream fout = new FileOutputStream(workDir.getName() + ".zip");
+        try (FileOutputStream fout = new FileOutputStream(workDir.getFileName() + ".zip");
              ZipOutputStream zout = new ZipOutputStream(fout)) {
-            zipDirectory(zout, workDir, "");
+
+            Files.walkFileTree(workDir, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    if (isCorrectName(file)) {
+                        zipFile(zout, file);
+                    }
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+
         } catch (IOException e) {
-            System.out.printf("Не удалось создать архив %s.zip%n", workDir.getName());
+            System.out.printf("Не удалось создать архив %s.zip%n", workDir.getFileName());
             return;
         }
         System.out.println("Архивация выбранных файлов прошла успешно");
     }
 }
+

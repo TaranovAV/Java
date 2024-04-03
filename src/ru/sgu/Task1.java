@@ -86,7 +86,7 @@ public class Task1 {
                 for (DataFormat el : data) {
                     writer.write(el.getInf() + "\n");
                 }
-                System.out.println("Результат был успешно записан в файл" + fileName);
+                System.out.println("Результат был успешно записан в файл " + fileName);
             } catch (IOException e) {
                 System.out.println("Ошибка при записи в файл: " + e.getMessage());
             }
