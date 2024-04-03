@@ -14,6 +14,12 @@ public class Task1 {
 
     private static final String fileName = "output.txt";
 
+    public ArrayList<DataFormat> data;
+
+    public Task1() {
+        this.data = new ArrayList<>();
+    }
+
     public class DataFormat {
 
         private String lastName, firstName, patronymic, company, stringInf;
@@ -68,12 +74,6 @@ public class Task1 {
         }
     }
 
-    public ArrayList<DataFormat> data;
-
-    public Task1() {
-        this.data = new ArrayList<>();
-    }
-
     public void start() {
         Comparator<DataFormat> comparator = Comparator
                 .comparing(DataFormat::getRating, Comparator.reverseOrder())
@@ -86,7 +86,7 @@ public class Task1 {
                 for (DataFormat el : data) {
                     writer.write(el.getInf() + "\n");
                 }
-                System.out.println("Результат был успешно записан в файл output.txt");
+                System.out.println("Результат был успешно записан в файл" + fileName);
             } catch (IOException e) {
                 System.out.println("Ошибка при записи в файл: " + e.getMessage());
             }
@@ -101,15 +101,13 @@ public class Task1 {
             while (scanner.hasNextLine()) {
                 String[] data = scanner.nextLine().split(" ");
                 int n = data.length;
-                int r = Integer.parseInt(data[n - 1]);
-                if (r >= 1 && r <= 10) {
-                    String surname = data[0];
-                    String name = (n >= 2) ? data[1] : null;
-                    String patronymic = (n >= 3) ? data[2] : null;
-                    String companyName = (n >= 4) ? data[n - 2] : null;
-                    DataFormat el = new DataFormat(surname, name, patronymic, companyName, r);
-                    dataSet.add(el);
-                }
+                String surname = data[0];
+                String name = (n >= 2) ? data[1] : null;
+                String patronymic = (n >= 3) ? data[2] : null;
+                String companyName = (n >= 4) ? data[n - 2] : null;
+                int rating = Integer.parseInt(data[n - 1]);
+                DataFormat el = new DataFormat(surname, name, patronymic, companyName, rating);
+                dataSet.add(el);
             }
         } catch (IOException e) {
             System.out.println("Ошибка при считывании файла `" + fileName + "`: " + e.getMessage());
