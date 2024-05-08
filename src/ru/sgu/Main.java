@@ -49,7 +49,8 @@ public class Main {
         Main m = new Main();
 
         Company c = new Company("ПринтерМастер");
-        c.addDepartment(m.getIT("IT-отдел №1", "разработка новой линейки принтеров"));
+        IT originalIT = m.getIT("IT-отдел №1", "разработка новой линейки принтеров");
+        c.addDepartment(originalIT);
         c.addDepartment(m.getIT("IT-отдел №2", "улучшение производства картриджей"));
         c.addDepartment(m.getProduction("Производственный цех", "высокоточные принтеры"));
         c.addDepartment(m.getTechSupport("Техническая поддержка"));
@@ -58,13 +59,13 @@ public class Main {
         ArrayList<BasicInfo> deps = c.getDepartments();
         System.out.println("\nСравнение двух IT-отделов: " + deps.get(0).equals(deps.get(1)));
 
-        System.out.println("\nХеш-коды отделов:" );
+        System.out.println("\nХеш-коды отделов:");
         for (BasicInfo el : deps) {
             System.out.println(el.getDepartmentName() + ": " + el.hashCode());
         }
 
         System.out.println("\nСравнение отделов по количеству сотрудников:");
-        System.out.println("Количество сотрудников:" );
+        System.out.println("Количество сотрудников:");
         for (BasicInfo el : deps) {
             System.out.println(el.getDepartmentName() + ": " + el.getTotalNumberOfEmployees());
         }
@@ -73,12 +74,12 @@ public class Main {
         System.out.println("Сравнение отдела технической поддержки и IT-отдела №1: " +
                 deps.get(3).compareTo(deps.get(1)));
 
-        System.out.println("\nНазначение отделов:" );
+        System.out.println("\nНазначение отделов:");
         for (BasicInfo el : deps) {
             System.out.println(el.toString());
         }
 
-        System.out.println("\nВыплата зарплат сотрудникам отделов:" );
+        System.out.println("\nВыплата зарплат сотрудникам отделов:");
         BigDecimal sum = new BigDecimal(0);
         for (BasicInfo el : deps) {
             sum = sum.add(el.getTotalSalary());
@@ -86,7 +87,40 @@ public class Main {
         }
         System.out.println("Суммарная выплата: " + sum);
 
+        // Создание поверхностной копии IT-отдела
+        IT shallowCopyIT = originalIT.shallowCopy();
+        // Создание глубокой копии IT-отдела
+        IT deepCopyIT = originalIT.deepCopy();
+
+        System.out.println("\nДо изменений в оригинальном отделе:");
+        System.out.println("\nПоверхностная копия IT-отдела:");
+        System.out.println(shallowCopyIT.toString());
+        System.out.println("Сотрудники в поверхностной копии:");
+        System.out.println(shallowCopyIT.getEmployees().toString());
+
+        System.out.println("\nГлубокая копия IT-отдела:");
+        System.out.println(deepCopyIT.toString());
+        System.out.println("Сотрудники в глубокой копии:");
+        System.out.println(deepCopyIT.getEmployees().toString());
+
+        // Удаление первого сотрудника из оригинального IT-отдела
+        ArrayList<Employee> employees = originalIT.getEmployees();
+        if (!employees.isEmpty()) {
+            originalIT.fireEmployee(employees.get(0));
+        }
+
+        System.out.println("\nПосле в оригинальном отделе:");
+        System.out.println("\nПоверхностная копия IT-отдела:");
+        System.out.println(shallowCopyIT.toString());
+        System.out.println("Сотрудники в поверхностной копии:");
+        System.out.println(shallowCopyIT.getEmployees().toString());
+
+        System.out.println("\nГлубокая копия IT-отдела:");
+        System.out.println(deepCopyIT.toString());
+        System.out.println("Сотрудники в глубокой копии:");
+        System.out.println(deepCopyIT.getEmployees().toString());
     }
+
     public static void main(String[] args) throws Exception {
         new Main().run();
     }

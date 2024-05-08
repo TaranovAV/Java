@@ -14,6 +14,25 @@ public class IT extends Department implements Comparable<BasicInfo>, BasicInfo {
         this.product = product;
     }
 
+    private IT(IT other) {
+        super(other.name);
+        this.employees = other.employees;
+        this.product = other.product;
+    }
+
+    public IT shallowCopy() {
+        return new IT(this);
+    }
+
+    public IT deepCopy() {
+        IT copy = new IT(this.name, this.product);
+        copy.employees = new ArrayList<>();
+        for (Employee employee : this.employees) {
+            copy.employees.add(employee.deepCopy());
+        }
+        return copy;
+    }
+
     @Override
     public String getDepartmentName() {
         return this.name;

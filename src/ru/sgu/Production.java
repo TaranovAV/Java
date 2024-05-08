@@ -14,19 +14,42 @@ public class Production extends Department implements Comparable<BasicInfo>, Bas
         this.product = product;
     }
 
+    public Production(Production other) {
+        super(other.name);
+        this.employees = new ArrayList<>(other.employees);
+        this.product = other.product;
+    }
+
+    public Production shallowCopy() {
+        return new Production(this);
+    }
+
+    public Production deepCopy() {
+        Production copy = new Production(this.name, this.product);
+        copy.employees = new ArrayList<>();
+        for (Employee employee : this.employees) {
+            copy.employees.add(employee.deepCopy());
+        }
+        return copy;
+    }
+
     @Override
     public String getDepartmentName() {
         return this.name;
     }
+
     public void hireEmployee(Employee emp) {
         employees.add(emp);
     }
+
     public void fireEmployee(Employee emp) {
         employees.remove(emp);
     }
+
     public ArrayList<Employee> getEmployees() {
         return employees;
     }
+
     public BigDecimal getTotalSalary() {
         BigDecimal totalSalary = new BigDecimal(0);
         for (Employee employee : employees) {
@@ -61,5 +84,4 @@ public class Production extends Department implements Comparable<BasicInfo>, Bas
     public String toString() {
         return "В отделе `" + this. name + "` разрабатываются " + this.product;
     }
-
 }

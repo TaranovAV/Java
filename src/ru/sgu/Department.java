@@ -12,11 +12,14 @@ interface BasicInfo {
 
 abstract public class Department {
     protected String name;
-    protected ArrayList<Employee> employees;
+
     public Department(String name) {
         this.name = name;
     }
+
     public abstract void hireEmployee(Employee employee);
+
     public abstract void fireEmployee(Employee employee);
+
     public abstract ArrayList<Employee> getEmployees();
 }

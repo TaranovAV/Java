@@ -15,15 +15,33 @@ public class Employee implements Comparable<Employee> {
         this.salary = salary;
     }
 
+    public Employee(Employee other) {
+        this.firstName = other.firstName;
+        this.lastName = other.lastName;
+        this.position = other.position;
+        this.salary = other.salary;
+    }
+
+    public Employee shallowCopy() {
+        return new Employee(this);
+    }
+
+    public Employee deepCopy() {
+        return new Employee(this.firstName, this.lastName, this.position, this.salary);
+    }
+
     public String getFirstName() {
         return firstName;
     }
+
     public String getLastName() {
         return lastName;
     }
+
     public String getPosition() {
         return position;
     }
+
     public double getSalary() {
         return salary;
     }
@@ -40,7 +58,7 @@ public class Employee implements Comparable<Employee> {
 
     @Override
     public int compareTo(Employee emp) {
-        if (this.salary > emp.salary) 
+        if (this.salary > emp.salary)
             return 1;
         else if (this.salary < emp.salary)
             return -1;
@@ -61,5 +79,5 @@ public class Employee implements Comparable<Employee> {
                 ", Зарплата=" + salary +
                 '}';
     }
-
 }
+

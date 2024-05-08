@@ -5,12 +5,30 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class TechSupport extends Department implements Comparable<BasicInfo>, BasicInfo {
-    
+
     private ArrayList<Employee> employees;
 
     public TechSupport(String name) {
         super(name);
         employees = new ArrayList<>();
+    }
+
+    public TechSupport(TechSupport other) {
+        super(other.name);
+        this.employees = new ArrayList<>(other.employees);
+    }
+
+    public TechSupport shallowCopy() {
+        return new TechSupport(this);
+    }
+
+    public TechSupport deepCopy() {
+        TechSupport copy = new TechSupport(this.name);
+        copy.employees = new ArrayList<>();
+        for (Employee employee : this.employees) {
+            copy.employees.add(employee.deepCopy());
+        }
+        return copy;
     }
 
     @Override
@@ -61,5 +79,7 @@ public class TechSupport extends Department implements Comparable<BasicInfo>, Ba
     }
 
     @Override
-    public String toString() { return "В отделе `" + this.name + "` оказывают техническую поддержку"; }
+    public String toString() {
+        return "В отделе `" + this.name + "` оказывают техническую поддержку";
+    }
 }
